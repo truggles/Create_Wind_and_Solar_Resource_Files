@@ -39,6 +39,9 @@ mask = np.array(states.mask(lon, lat, wrap_lon=False))
 NY = np.ma.masked_not_equal(mask, 34)*0.+1.
 TX = np.ma.masked_not_equal(mask, 43)*0.+1.
 
+countries = regionmask.defined_regions.natural_earth.countries_50
+mask2 = np.array(countries.mask(lon, lat, wrap_lon=False))
+FR = np.ma.masked_not_equal(mask2, 160)*0.+1.
 
 
 """
@@ -101,10 +104,16 @@ mask_TEX_out.id='mask_TEX'
 mask_TEX_out.setAxis(0,lat)
 mask_TEX_out.setAxis(1,lon)
 
+mask_FR_out = MV.array(FR)
+mask_FR_out.id='mask_FR'
+mask_FR_out.setAxis(0,lat)
+mask_FR_out.setAxis(1,lon)
+
 # Create a new NetCDF file and write these two variables into it for later use;
-g=cdms.open('selected_masks.nc','w')
+g=cdms.open('selected_masks_NEW.nc','w')
 g.write(mask_NYS_out)
 g.write(mask_TEX_out)
+g.write(mask_FR_out)
 
 
 """

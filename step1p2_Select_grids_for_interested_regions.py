@@ -116,10 +116,10 @@ def make_grid_cell_selections(scf, wcf, region_mask, land_mask, selection_method
 ### Step 2
 # Take the NYS as an example:
 # I first read the NYS mask created in the previous step
-fmask=cdms.open(f'selected_masks.nc')
-g=cdms.open(f'selected_mask_outfile.nc','w') # out_file
+fmask=cdms.open(f'selected_masks_NEW.nc')
+g=cdms.open(f'selected_mask_outfile_NEW.nc','w') # out_file
 results = {}
-for region_name in ['NYS', 'TEX',] : # 'NYIS_2018', 'TI', 'ERCO_2018', 'PJM_2018']:
+for region_name in ['NYS', 'TEX', 'FR']:# 'NYIS_2018', 'TI', 'ERCO_2018', 'PJM_2018']:
     print(f"REGION: {region_name}")
     mask_region= fmask(f'mask_{region_name}')
     # Now I used the NYS mask and land mask to filter the decadal mean solar and wind CFs;
@@ -157,7 +157,10 @@ if not plot_masks:
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from matplotlib import pyplot as plt
+import matplotlib
 import os
+
+matplotlib.rcParams.update({'font.size': 16})
 
 if not os.path.exists('plots'):
     os.makedirs('plots')
@@ -172,7 +175,7 @@ def plot_region(lon, lat, mask_region, save_name, extent=[-150,-50, 10, 80]):
     
     im = ax.pcolormesh( lon, lat, mask_region, transform=ccrs.PlateCarree() )
     cbar = ax.figure.colorbar(im)
-    name = "resource annual capacity factors" if '_weighted' in save_name else "selected region"
+    name = "mean capacity factor" if '_weighted' in save_name else "selected region"
     cbar.ax.set_ylabel(name)
     
     ax.set_extent(extent)
@@ -187,6 +190,7 @@ extents = {
         'TEX' : [-110, -85, 20, 40],
         'TI' : [-110, -85, 20, 40],
         'ERCO_2018' : [-110, -85, 20, 40],
+        'FR' : [-10, 15, 40, 55],
         }
 
 
@@ -197,7 +201,7 @@ dlon = 0.625
 plot_shifted_lon = [i - dlon/2. for i in lon]
 plot_shifted_lat = [i - dlat/2. for i in lat]
 
-for region_name in ['NYS', 'TEX',]:# 'NYIS_2018', 'TI', 'ERCO_2018', 'PJM_2018']:
+for region_name in ['NYS', 'TEX', 'FR']:# 'NYIS_2018', 'TI', 'ERCO_2018', 'PJM_2018']:
 
     print(region_name)
 

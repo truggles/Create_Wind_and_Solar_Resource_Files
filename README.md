@@ -64,6 +64,8 @@ information for each grid cell for each year and are approximately 7 GB.
 
 ### Resources
 
+Screen cast showing how to use the step1 and step2 scripts in `` https://drive.google.com/file/d/13_TprW7_wJt0_rK0skIyIdh33s1jwpBp/view?usp=sharing
+
 Create regional avg CFs:
 
  * First define the region interested (e.g., California)
