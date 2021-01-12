@@ -179,8 +179,9 @@ for file in fd_cam:
 fout=cdms.open(data_path3+case_name+'_temp.nc','w')
 fout.write(temp)
 fout.close()
+print("File created. Now generating the annual mean values file.")
 temp_annual = cdutil.averager(temp,axis=0,weights='equal')
 temp_annual.id='temp_annual'
-gout=cdms.open(case_name+'_temp_annual.nc','w')
+gout=cdms.open(date_path3+case_name+'_temp_annual.nc','w')
 gout.write(temp_annual)
 gout.close()
