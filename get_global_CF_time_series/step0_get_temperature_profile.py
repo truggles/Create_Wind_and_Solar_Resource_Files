@@ -104,10 +104,17 @@ for file in fd_cam:
                 print ('lat/lon number error')
                 sys.exit
             
+            # ----------------- Lei added here:
+            # You don't need the loop below, which will increase times of caluclations; 
+            index = int(position)
+            temp[index] = t
+
+
+            
             #kt = np.zeros([24,lat_num,lon_num])
             #kt[swtdn_tmp != 0.] = (swgdn_tmp[swtdn_tmp != 0.]/swtdn_tmp[swtdn_tmp != 0.])
             #kt[kt<0.] = 0.
-            for hr_idx in range(24):
+            # for hr_idx in range(24):
                 #zenith, solar_azi, ha = cal_solar_angles(lat, lon, int(year), month, days, hr_idx, days_ord)
                 #incidence_rad, panel_tilt_rad = cal_incidence_angles(zenith, solar_azi, tilt_pv, azim_pv, 'h')
                 #mask1 = MV.filled(MV.masked_equal(swtdn_tmp[hr_idx]   ,0)*0+1,0)
@@ -167,11 +174,11 @@ for file in fd_cam:
                 # Huld, T. et al., 2010. Mapping the performance of PV modules, effects of module type and data averaging. Solar Energy, 84(2), p.324-338. DOI: 10.1016/j.solener.2009.12.002
                 #T_ = np.array((1*t[hr_idx] + HF_free * rad_adjust) - R_TMOD )
                 #G_ = np.array(rad_adjust / R_IRRADIANCE)
-                T_ = np.array(1*t[hr_idx])
-                index = int(position+hr_idx)
+                # T_ = np.array(1*t[hr_idx])
+                # index = int(position+hr_idx)
                 #temp[index,G_==0.] = 0.
                 #temp[index,G_ >0.] = G_[G_>0.] * (1+k_1*np.log(G_[G_>0.])+k_2*(np.log(G_[G_>0.]))**2 + T_[G_>0.]*(k_3+k_4*(np.log(G_[G_>0.]))+k_5*(np.log(G_[G_>0.]))**2) + k_6*(T_[G_>0.]**2))
-                temp[index] = T_
+                # temp[index] = T_
 
 #temp[temp<0]=0
 #temp[temp>1]=1
