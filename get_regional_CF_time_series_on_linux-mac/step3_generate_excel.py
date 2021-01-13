@@ -29,7 +29,7 @@ assert(len(sys.argv) == 2), "You must provide a target directory"
 data_path = sys.argv[1]
 
 
-
+print(sys.argv)
 info = data_path.strip('/').split('/')
 f_dir = info[-1]
 info = f_dir.split('_')
@@ -56,12 +56,15 @@ print(f"\nFound these files in {data_path}")
 files.sort()
 s_files = []
 w_files = []
+t_files = []
 for f in files:
     print(f)
     if 'scf' in f:
         s_files.append(f)
     if 'wcf' in f:
         w_files.append(f)
+    if 'temp' in f:
+        t_files.append(f)
 
 
 
@@ -73,7 +76,7 @@ for f in files:
     tmp = tmp.replace('.nc', '')
     info = tmp.split('_')
     yr = info[-1]
-    yr = int(yr.replace('scf','').replace('wcf',''))
+    yr = int(yr.replace('scf','').replace('wcf','').replace('temp', ''))
     if yr < min_year:
         min_year = yr
     if yr > max_year:
@@ -87,6 +90,7 @@ def get_file_by_year(files, year):
         if str(year) in f and str(year) == f[-7:-3]:
             return f
     print(f"No files found for year {year}")
+    return 0
 
 # Basically, the following script read the solar/wind time series from NetCDF file, and then
 # attach it with a time stamp and output to csv files
@@ -95,13 +99,27 @@ for yr in range(min_year, max_year+1):
 
     # Make datetime list with 1 hr spacing
     dts = pd.date_range(f"{yr}-01-01 01:00:00", f"{yr+1}-01-01 00:00:00", freq="1H")
-    s_file = cdms.open(get_file_by_year(s_files, yr))
-    s_nc_id = f'averaged_smask_{region}_{method}'
-    s_cfs = s_file(s_nc_id,squeeze=1)
-    w_file = cdms.open(get_file_by_year(w_files, yr))
-    w_nc_id = f'averaged_wmask_{region}_{method}'
-    w_cfs = w_file(w_nc_id,squeeze=1)
-    df = pd.DataFrame({'date_time': dts, 's_cfs': s_cfs, 'w_cfs': w_cfs})
+    to_df = {'date_time': dts}
+    s_name = get_file_by_year(s_files, yr)
+    if s_name:
+        s_file = cdms.open(s_name)
+        s_nc_id = f'averaged_smask_{region}_{method}'
+        s_cfs = s_file(s_nc_id,squeeze=1)
+        to_df['s_cfs'] = s_cfs
+    w_name = get_file_by_year(w_files, yr)
+    if w_name:
+        w_file = cdms.open(w_name)
+        w_nc_id = f'averaged_wmask_{region}_{method}'
+        w_cfs = w_file(w_nc_id,squeeze=1)
+        to_df['w_cfs'] = w_cfs
+    t_name = get_file_by_year(t_files, yr)
+    if t_name:
+        t_file = cdms.open(t_name)
+        t_nc_id = f'averaged_wmask_{region}_{method}' # change to tmask in the future
+        temps = t_file(t_nc_id,squeeze=1)
+        to_df['temp'] = temps
+    print(to_df)
+    df = pd.DataFrame(to_df)
     if first:
         master = df
         first = False
@@ -137,5 +155,9 @@ def make_MEM_compatible(df, save_name, cfs_var):
                 now_year = mem_format.year
     print(f"Outfile: {save_name}.csv")
 
-make_MEM_compatible(master, f"{date}_{region}_{method}_{str(min_year)}-{str(max_year)}_solar", "s_cfs")
-make_MEM_compatible(master, f"{date}_{region}_{method}_{str(min_year)}-{str(max_year)}_wind", "w_cfs")
+if len(s_files):
+    make_MEM_compatible(master, f"{date}_{region}_{method}_{str(min_year)}-{str(max_year)}_solar", "s_cfs")
+if len(w_files):
+    make_MEM_compatible(master, f"{date}_{region}_{method}_{str(min_year)}-{str(max_year)}_wind", "w_cfs")
+if len(t_files):
+    make_MEM_compatible(master, f"{date}_{region}_{method}_{str(min_year)}-{str(max_year)}_temp", "temp")
