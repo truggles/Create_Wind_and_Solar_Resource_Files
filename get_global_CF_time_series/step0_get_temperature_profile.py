@@ -107,7 +107,7 @@ for file in fd_cam:
             # ----------------- Lei added here:
             # You don't need the loop below, which will increase times of caluclations; 
             index = int(position)
-            temp[index] = t
+            temp[index:index+24] = t
 
 
             
@@ -189,6 +189,6 @@ fout.close()
 print("File created. Now generating the annual mean values file.")
 temp_annual = cdutil.averager(temp,axis=0,weights='equal')
 temp_annual.id='temp_annual'
-gout=cdms.open(date_path3+case_name+'_temp_annual.nc','w')
+gout=cdms.open(data_path3+case_name+'_temp_annual.nc','w')
 gout.write(temp_annual)
 gout.close()
